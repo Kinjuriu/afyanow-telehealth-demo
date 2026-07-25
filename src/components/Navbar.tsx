@@ -8,8 +8,12 @@ import { IconMenu, IconClose } from "./icons";
 const navLinks = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Services", href: "#services" },
-  { label: "Browse clinicians", href: "#clinicians" },
+  { label: "Browse clinicians", href: "/patient/clinicians" },
 ];
+
+function isHashLink(href: string) {
+  return href.startsWith("#");
+}
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -27,25 +31,35 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-slate-600 hover:text-indigo-700"
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) =>
+            isHashLink(link.href) ? (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium text-slate-600 hover:text-indigo-700"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium text-slate-600 hover:text-indigo-700"
+              >
+                {link.label}
+              </Link>
+            )
+          )}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <a
-            href="#patient-login"
+          <Link
+            href="/patient/intake"
             className="text-sm font-medium text-slate-600 hover:text-indigo-700"
           >
-            Patient login
-          </a>
-          <Button href="#clinician-login" variant="secondary" className="px-5 py-2.5">
+            Patient demo
+          </Link>
+          <Button href="/clinician" variant="secondary" className="px-5 py-2.5">
             Clinician login
           </Button>
         </div>
@@ -64,30 +78,41 @@ export default function Navbar() {
       {open && (
         <div className="border-t border-indigo-100 bg-white px-4 pb-6 pt-2 md:hidden">
           <nav className="flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-indigo-50 hover:text-indigo-700"
-              >
-                {link.label}
-              </a>
-            ))}
-            <a
-              href="#patient-login"
+            {navLinks.map((link) =>
+              isHashLink(link.href) ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-indigo-50 hover:text-indigo-700"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-indigo-50 hover:text-indigo-700"
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
+            <Link
+              href="/patient/intake"
               onClick={() => setOpen(false)}
               className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-indigo-50 hover:text-indigo-700"
             >
-              Patient login
-            </a>
-            <a
-              href="#clinician-login"
+              Patient demo
+            </Link>
+            <Link
+              href="/clinician"
               onClick={() => setOpen(false)}
               className="mt-2 rounded-full bg-indigo-600 px-3 py-2.5 text-center text-sm font-semibold text-white"
             >
               Clinician login
-            </a>
+            </Link>
           </nav>
         </div>
       )}

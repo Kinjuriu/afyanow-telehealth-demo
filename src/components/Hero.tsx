@@ -3,9 +3,9 @@ import Button from "./Button";
 import { IconArrowRight, IconShieldCheck, IconSparkles } from "./icons";
 
 const highlights = [
-  "500+ verified clinicians",
-  "6 specialties covered",
-  "Nairobi • Mombasa • Kisumu",
+  "Verified clinician profiles",
+  "Multiple care specialties",
+  "Designed for patients across Kenya",
 ];
 
 export default function Hero() {
@@ -41,11 +41,11 @@ export default function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button href="#how-it-works" variant="primary">
+            <Button href="/patient/intake" variant="primary">
               Start consultation
               <IconArrowRight className="h-4 w-4" />
             </Button>
-            <Button href="#clinicians" variant="secondary">
+            <Button href="/patient/clinicians" variant="secondary">
               Browse clinicians
             </Button>
           </div>
@@ -79,14 +79,23 @@ export default function Hero() {
             <p className="mt-1 text-sm font-semibold text-slate-900">
               Dermatology
             </p>
-            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
-              <div>
-                <p className="text-xs font-semibold text-slate-900">
+            <div className="mt-3 flex items-center gap-2.5 border-t border-slate-100 pt-3">
+              <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-white">
+                <Image
+                  src="/images/dr-amina-wanjiru.jpeg"
+                  alt="Dr. Amina Wanjiru"
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-semibold text-slate-900">
                   Dr. Amina Wanjiru
                 </p>
                 <p className="text-[0.65rem] text-slate-500">Nairobi</p>
               </div>
-              <span className="rounded-full bg-emerald-50 px-2 py-1 text-[0.65rem] font-semibold text-emerald-600">
+              <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-1 text-[0.65rem] font-semibold text-emerald-600">
                 Available
               </span>
             </div>
