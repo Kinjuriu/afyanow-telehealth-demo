@@ -42,7 +42,7 @@ const pillars = [
 
 export default function TrustSection() {
   return (
-    <section id="clinicians" className="bg-white py-20 sm:py-24">
+    <section id="clinicians" className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-5 lg:items-start">
           <div className="lg:col-span-2">

@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
+import FamilyCare from "@/components/FamilyCare";
 import CareCategories from "@/components/CareCategories";
 import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
@@ -12,6 +13,7 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <HowItWorks />
+        <FamilyCare />
         <CareCategories />
         <TrustSection />
       </main>
