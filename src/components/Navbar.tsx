@@ -60,7 +60,7 @@ export default function Navbar() {
             Patient demo
           </Link>
           <Button href="/clinician" variant="secondary" className="px-5 py-2.5">
-            Clinician login
+            Clinician demo
           </Button>
         </div>
 
@@ -111,7 +111,7 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="mt-2 rounded-full bg-indigo-600 px-3 py-2.5 text-center text-sm font-semibold text-white"
             >
-              Clinician login
+              Clinician demo
             </Link>
           </nav>
         </div>
