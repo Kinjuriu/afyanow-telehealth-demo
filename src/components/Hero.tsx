@@ -82,7 +82,7 @@ export default function Hero() {
             <div className="mt-3 flex items-center gap-2.5 border-t border-slate-100 pt-3">
               <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-white">
                 <Image
-                  src="/images/dr-amina-wanjiru.jpeg"
+                  src="/images/clinicians/dr-amina-wanjiru.jpeg"
                   alt="Dr. Amina Wanjiru"
                   fill
                   sizes="36px"

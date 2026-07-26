@@ -48,7 +48,7 @@ export const CLINICIANS: Clinician[] = [
     ],
     availability: { status: "available", label: "Available now" },
     prices: { chat: 500, voice: 650, video: 800 },
-    photo: "/images/dr-amina-wanjiru.jpeg",
+    photo: "/images/clinicians/dr-amina-wanjiru.jpeg",
   },
   {
     id: "brian-otieno",
@@ -65,6 +65,7 @@ export const CLINICIANS: Clinician[] = [
     conditionsTreated: ["Fever", "Digestive issues", "Minor injuries", "Referrals"],
     availability: { status: "next", label: "Next appointment: Today, 2:30 PM" },
     prices: { chat: 450, voice: 600, video: 750 },
+    photo: "/images/clinicians/dr-brian-otieno.jpeg",
   },
   {
     id: "faith-chebet",
@@ -81,6 +82,7 @@ export const CLINICIANS: Clinician[] = [
     conditionsTreated: ["General illness", "Chronic disease monitoring", "Wellness checks"],
     availability: { status: "available", label: "Available now" },
     prices: { chat: 550, voice: 700, video: 850 },
+    photo: "/images/clinicians/dr-faith-chebet.jpeg",
   },
   {
     id: "grace-mwikali",
@@ -97,6 +99,7 @@ export const CLINICIANS: Clinician[] = [
     conditionsTreated: ["Acne", "Eczema", "Skin rashes", "Hair loss"],
     availability: { status: "available", label: "Available now" },
     prices: { chat: 600, voice: 750, video: 950 },
+    photo: "/images/clinicians/dr-grace-mwikali.jpeg",
   },
   {
     id: "kevin-mutua",
@@ -118,6 +121,7 @@ export const CLINICIANS: Clinician[] = [
     ],
     availability: { status: "next", label: "Next appointment: Tomorrow, 9:00 AM" },
     prices: { chat: 500, voice: 700, video: 900 },
+    photo: "/images/clinicians/dr-kevin-mutua.jpeg",
   },
   {
     id: "naomi-achieng",
@@ -134,6 +138,7 @@ export const CLINICIANS: Clinician[] = [
     conditionsTreated: ["Reproductive health", "Prenatal check-ins", "Menstrual concerns"],
     availability: { status: "available", label: "Available now" },
     prices: { chat: 650, voice: 800, video: 1000 },
+    photo: "/images/clinicians/dr-naomi-achieng.jpeg",
   },
   {
     id: "peter-kamau",
@@ -166,6 +171,7 @@ export const CLINICIANS: Clinician[] = [
     conditionsTreated: ["Tooth pain", "Gum sensitivity", "Oral hygiene guidance"],
     availability: { status: "next", label: "Next appointment: Today, 4:00 PM" },
     prices: { chat: 450, voice: 600, video: 800 },
+    photo: "/images/clinicians/dr-sarah-njeri.jpeg",
   },
 ];
 
