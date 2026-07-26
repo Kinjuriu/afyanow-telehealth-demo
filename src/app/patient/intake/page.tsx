@@ -165,7 +165,7 @@ export default function PatientIntakePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-blue-50 to-white">
-      <DemoHeader />
+      <DemoHeader switchTo={{ href: "/clinician", label: "Clinician demo" }} />
 
       <main className="mx-auto max-w-xl px-4 py-8 sm:px-6">
         <ProgressBar current={stepIndex + 1} total={STEPS.length} />
@@ -227,7 +227,7 @@ export default function PatientIntakePage() {
 function EmergencyNotice({ onRestart }: { onRestart: () => void }) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-white">
-      <DemoHeader />
+      <DemoHeader switchTo={{ href: "/clinician", label: "Clinician demo" }} />
       <main className="mx-auto max-w-xl px-4 py-10 sm:px-6">
         <div className="rounded-3xl border border-rose-200 bg-rose-50 p-6 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">

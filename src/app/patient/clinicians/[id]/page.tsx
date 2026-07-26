@@ -20,7 +20,7 @@ export default async function ClinicianProfilePage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-blue-50 to-white">
-      <DemoHeader />
+      <DemoHeader switchTo={{ href: "/clinician", label: "Clinician demo" }} />
 
       <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
         <Link
