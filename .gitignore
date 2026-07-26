@@ -42,3 +42,11 @@ next-env.d.ts
 
 # Claude Code local settings
 .claude/
+# Local screenshots and duplicate source images at project root
+/Screenshot*.png
+/dr-*.jpeg
+/*.jpg
+/*.webp
+
+# Optional local design references
+/design-references/
