@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/Button";
+import PrototypeDisclaimer from "@/components/patient/PrototypeDisclaimer";
 import { getClinicianById, getInitials } from "@/lib/clinicians";
 
 type ConsultationType = "chat" | "voice" | "video";
@@ -151,9 +152,11 @@ export default function BookingFlow() {
         </div>
       </div>
 
+      <PrototypeDisclaimer className="mt-6" />
+
       <Button
         variant="primary"
-        className="mt-8 w-full"
+        className="mt-6 w-full"
         onClick={() => setConfirmed(true)}
       >
         Continue to consultation

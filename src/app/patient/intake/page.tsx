@@ -6,6 +6,7 @@ import Link from "next/link";
 import DemoHeader from "@/components/DemoHeader";
 import ProgressBar from "@/components/patient/ProgressBar";
 import OptionGroup from "@/components/patient/OptionGroup";
+import PrototypeDisclaimer from "@/components/patient/PrototypeDisclaimer";
 import {
   WHO_OPTIONS,
   CONCERN_OPTIONS,
@@ -183,10 +184,7 @@ export default function PatientIntakePage() {
       <main className="mx-auto max-w-xl px-4 py-8 sm:px-6">
         <ProgressBar current={stepIndex + 1} total={STEPS.length} />
 
-        <p className="mt-5 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 text-xs leading-relaxed text-slate-600">
-          AfyaNow helps identify an appropriate type of care. It does not
-          provide a medical diagnosis.
-        </p>
+        <PrototypeDisclaimer className="mt-5" />
 
         <div className="mt-6 rounded-3xl border border-indigo-100 bg-white p-6 shadow-sm shadow-indigo-100/40">
           <h1 className="text-lg font-semibold text-slate-900 sm:text-xl">

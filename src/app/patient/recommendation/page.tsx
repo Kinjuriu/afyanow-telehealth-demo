@@ -1,5 +1,6 @@
 import DemoHeader from "@/components/DemoHeader";
 import Button from "@/components/Button";
+import PrototypeDisclaimer from "@/components/patient/PrototypeDisclaimer";
 import { getRecommendation } from "@/lib/intake";
 import { isSafetyLevel } from "@/lib/safety";
 
@@ -37,7 +38,7 @@ export default async function PatientRecommendationPage({
 
       <main className="mx-auto max-w-xl px-4 py-10 sm:px-6">
         <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">
-          Recommended care
+          Recommended starting point
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
           {result.specialty}
@@ -74,9 +75,7 @@ export default async function PatientRecommendationPage({
           <p className="mt-1 text-sm text-slate-600">{result.alternativeReason}</p>
         </div>
 
-        <p className="mt-6 text-xs text-slate-400">
-          Fictional demo recommendation — not a medical diagnosis.
-        </p>
+        <PrototypeDisclaimer className="mt-6" />
 
         <Button
           href={`/patient/clinicians?specialty=${encodeURIComponent(result.specialty)}&urgency=${encodeURIComponent(safetyLevel)}`}

@@ -12,6 +12,23 @@ verified clinicians who match that need, and book a chat, voice, or video
 consultation. A parallel clinician workspace lets a demo clinician manage
 availability, run a mock consultation, and document clinical notes.
 
+## Care-navigation pipeline
+
+AfyaNow's patient flow is a one-way pipeline:
+
+Patient input → structured information → safety/urgency screening →
+care-navigation recommendation → clinician matching → clinician
+consultation
+
+Structured intake answers first pass through a conservative, rule-based
+safety/urgency check (emergency / priority / routine). Only non-emergency
+cases reach the care-navigation step, which recommends a starting point —
+General Practitioner by default, a specialist only where the concern is
+clearly specialist-specific, a paediatrician where appropriate for a
+child. **AfyaNow does not diagnose.** The recommendation narrows down
+where to start; the clinician who accepts the consultation is responsible
+for the actual clinical assessment, diagnosis, and treatment.
+
 ## Main demo journey
 
 **Patient side** (`/patient/intake` → `/patient/recommendation` →
@@ -77,7 +94,9 @@ numbers, affiliations, ratings, patient cases, and vitals — is fictional
 demonstration data and does not represent real people, institutions, or
 medical records.**
 
-**The intake-to-care-type recommendation is simple rule-based demo logic
-(concern → specialty lookup with a few overrides), not a clinical
-decision-support tool. It has not been clinically validated and must not be
-used for real medical triage or diagnosis.**
+**The intake → safety/urgency screening → care-navigation recommendation
+pipeline is simple rule-based demo logic (a conservative emergency /
+priority / routine check, followed by a concern → specialty lookup with a
+few overrides), not a clinical decision-support tool. It has not been
+clinically validated and must not be used for real medical triage or
+diagnosis.**
