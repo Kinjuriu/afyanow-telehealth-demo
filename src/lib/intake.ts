@@ -69,14 +69,24 @@ const DURATION_LABELS: Record<string, string> = Object.fromEntries(
   DURATION_OPTIONS.map((option) => [option.id, option.label.toLowerCase()])
 );
 
-const CONCERN_SPECIALTY: Record<string, string> = {
-  skin: "Dermatologist",
-  "cough-cold": "General Practitioner",
-  stomach: "General Practitioner",
-  mood: "Mental Health Counsellor",
-  "womens-health": "Gynaecologist",
+// Concerns with no reasonable general-practice pathway: dental care always
+// needs a dentist, and a feverish child's primary-care route is paediatric
+// care rather than adult general practice. These are the only concerns
+// routed directly to a non-GP specialty — everything else is treated as
+// ambiguous/overlapping with general practice and defaults to a GP.
+const DIRECT_ROUTE_CONCERNS: Record<string, string> = {
   tooth: "Dentist",
   "child-fever": "Paediatrician",
+};
+
+// Concerns that are uncertain or overlap with general practice. These route
+// to a General Practitioner first; the specialist named here is surfaced as
+// the "alternative" a GP may refer the patient to, not the primary
+// recommendation.
+const RELATED_SPECIALIST_BY_CONCERN: Record<string, string> = {
+  skin: "Dermatologist",
+  mood: "Mental Health Counsellor",
+  "womens-health": "Gynaecologist",
 };
 
 const URGENCY_BY_SEVERITY: Record<string, string> = {
@@ -90,21 +100,9 @@ const ALTERNATIVE_BY_SPECIALTY: Record<string, { option: string; reason: string 
     option: "Pharmacist consultation",
     reason: "For minor, non-urgent symptoms, a pharmacist can offer quick guidance.",
   },
-  Dermatologist: {
-    option: "General Practitioner",
-    reason: "If you're unsure whether it's skin-specific, a GP can assess first.",
-  },
   Paediatrician: {
     option: "General Practitioner",
     reason: "A GP can also assess common childhood illnesses.",
-  },
-  "Mental Health Counsellor": {
-    option: "General Practitioner",
-    reason: "A GP can provide an initial assessment and referral.",
-  },
-  Gynaecologist: {
-    option: "General Practitioner",
-    reason: "A GP can offer general guidance ahead of a specialist visit.",
   },
   Dentist: {
     option: "General Practitioner",
@@ -121,6 +119,29 @@ export type CareRecommendation = {
   alternativeReason: string;
 };
 
+function buildExplanation(specialty: string, relatedSpecialist?: string): string {
+  if (specialty === "General Practitioner" && relatedSpecialist) {
+    return `Based on your answers, a General Practitioner is a good starting point for this kind of concern. They can carry out an initial assessment and refer you to a ${relatedSpecialist.toLowerCase()} if that turns out to be more appropriate.`;
+  }
+  if (specialty === "General Practitioner" || specialty === "Paediatrician") {
+    return `Based on your answers, a ${specialty} is a good starting point. They can carry out an initial assessment and refer you onward if needed.`;
+  }
+  return `Based on your answers, a ${specialty} may be the most appropriate starting point for this concern.`;
+}
+
+function buildAlternative(
+  specialty: string,
+  relatedSpecialist?: string
+): { option: string; reason: string } {
+  if (specialty === "General Practitioner" && relatedSpecialist) {
+    return {
+      option: relatedSpecialist,
+      reason: `If your General Practitioner feels a ${relatedSpecialist.toLowerCase()} would be more appropriate, they can refer you after an initial assessment.`,
+    };
+  }
+  return ALTERNATIVE_BY_SPECIALTY[specialty] ?? ALTERNATIVE_BY_SPECIALTY["General Practitioner"];
+}
+
 export function getRecommendation(input: {
   who: string;
   concernId: string;
@@ -129,20 +150,21 @@ export function getRecommendation(input: {
 }): CareRecommendation {
   const { who, concernId, durationId, severityId } = input;
 
-  let specialty = CONCERN_SPECIALTY[concernId] ?? "General Practitioner";
-  if (who === "child" && (concernId === "cough-cold" || concernId === "stomach")) {
+  let specialty = DIRECT_ROUTE_CONCERNS[concernId] ?? "General Practitioner";
+  if (who === "child" && specialty === "General Practitioner") {
     specialty = "Paediatrician";
   }
 
-  const urgency = URGENCY_BY_SEVERITY[severityId] ?? URGENCY_BY_SEVERITY.mild;
+  const relatedSpecialist = RELATED_SPECIALIST_BY_CONCERN[concernId];
 
-  const explanation = `Based on your answers, a ${specialty} may be the most appropriate starting point. They can assess your symptoms and refer you to a specialist if needed.`;
+  const urgency = URGENCY_BY_SEVERITY[severityId] ?? URGENCY_BY_SEVERITY.mild;
+  const explanation = buildExplanation(specialty, relatedSpecialist);
 
   const concernLabel = CONCERN_LABELS[concernId] ?? "your symptoms";
   const durationLabel = DURATION_LABELS[durationId] ?? "this period";
   const reason = `Your main concern (${concernLabel}) at ${severityId} severity, present for ${durationLabel}, best matches this type of care.`;
 
-  const alternative = ALTERNATIVE_BY_SPECIALTY[specialty] ?? ALTERNATIVE_BY_SPECIALTY["General Practitioner"];
+  const alternative = buildAlternative(specialty, relatedSpecialist);
 
   return {
     specialty,
