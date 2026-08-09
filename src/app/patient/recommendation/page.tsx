@@ -78,7 +78,7 @@ export default async function PatientRecommendationPage({
         <PrototypeDisclaimer className="mt-6" />
 
         <Button
-          href={`/patient/clinicians?specialty=${encodeURIComponent(result.specialty)}&urgency=${encodeURIComponent(safetyLevel)}`}
+          href={`/patient/clinicians?specialty=${encodeURIComponent(result.specialty)}&urgency=${encodeURIComponent(safetyLevel)}&who=${encodeURIComponent(who)}`}
           variant="primary"
           className="mt-6 w-full sm:w-auto"
         >
