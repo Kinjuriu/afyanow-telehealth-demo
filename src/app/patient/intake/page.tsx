@@ -17,6 +17,7 @@ import {
   EMERGENCY_OPTIONS,
   type IntakeOption,
 } from "@/lib/intake";
+import { assessSafety } from "@/lib/safety";
 
 type StepKey =
   | "who"
@@ -140,8 +141,19 @@ export default function PatientIntakePage() {
 
   function goNext() {
     if (step.key === "emergency") {
-      const hasWarningSign = currentSelection.some((id) => id !== "none");
-      if (hasWarningSign) {
+      // Safety/urgency assessment runs here, before any specialty
+      // recommendation — emergency cases stop the flow entirely, priority
+      // and routine cases continue into care navigation with their tier
+      // attached.
+      const assessment = assessSafety({
+        who: answers.who[0] ?? "myself",
+        concernId: answers.concern[0] ?? "cough-cold",
+        durationId: answers.duration[0] ?? "today",
+        severityId: answers.severity[0] ?? "mild",
+        emergencyIds: currentSelection,
+      });
+
+      if (assessment.level === "Emergency") {
         setEmergency(true);
         return;
       }
@@ -151,6 +163,7 @@ export default function PatientIntakePage() {
         concern: answers.concern[0] ?? "cough-cold",
         duration: answers.duration[0] ?? "today",
         severity: answers.severity[0] ?? "mild",
+        safety: assessment.level,
       });
       router.push(`/patient/recommendation?${params.toString()}`);
       return;

@@ -1,6 +1,7 @@
 import DemoHeader from "@/components/DemoHeader";
 import Button from "@/components/Button";
 import { getRecommendation } from "@/lib/intake";
+import { isSafetyLevel } from "@/lib/safety";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -19,6 +20,14 @@ export default async function PatientRecommendationPage({
   const concernId = asString(params.concern, "cough-cold");
   const durationId = asString(params.duration, "today");
   const severityId = asString(params.severity, "mild");
+
+  // The safety/urgency tier was already decided during intake (see
+  // src/lib/safety.ts) before this recommendation was generated — emergency
+  // cases never reach this page. It defaults to "Routine" only for direct/
+  // bookmarked links that skip the intake flow, not as a fallback within the
+  // normal flow.
+  const safetyParam = asString(params.safety, "Routine");
+  const safetyLevel = isSafetyLevel(safetyParam) ? safetyParam : "Routine";
 
   const result = getRecommendation({ who, concernId, durationId, severityId });
 
@@ -70,7 +79,7 @@ export default async function PatientRecommendationPage({
         </p>
 
         <Button
-          href={`/patient/clinicians?specialty=${encodeURIComponent(result.specialty)}`}
+          href={`/patient/clinicians?specialty=${encodeURIComponent(result.specialty)}&urgency=${encodeURIComponent(safetyLevel)}`}
           variant="primary"
           className="mt-6 w-full sm:w-auto"
         >
