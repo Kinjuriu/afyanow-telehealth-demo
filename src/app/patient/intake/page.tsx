@@ -19,6 +19,11 @@ import {
   type IntakeOption,
 } from "@/lib/intake";
 import { assessSafety } from "@/lib/safety";
+import {
+  mapExtractedIntakeToAnswers,
+  MAX_PATIENT_TEXT_LENGTH,
+  type ExtractedIntake,
+} from "@/lib/nl-intake";
 
 type StepKey =
   | "who"
@@ -99,16 +104,73 @@ const EMPTY_ANSWERS: Record<StepKey, string[]> = {
   emergency: [],
 };
 
+type ExtractStatus = "idle" | "loading" | "error";
+
+type ExtractApiResponse =
+  | { ok: true; data: ExtractedIntake }
+  | { ok: false; reason: string };
+
 export default function PatientIntakePage() {
   const router = useRouter();
+  const [phase, setPhase] = useState<"intro" | "wizard">("intro");
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<StepKey, string[]>>(EMPTY_ANSWERS);
   const [emergency, setEmergency] = useState(false);
+
+  const [nlText, setNlText] = useState("");
+  const [nlStatus, setNlStatus] = useState<ExtractStatus>("idle");
 
   function resetIntake() {
     setAnswers(EMPTY_ANSWERS);
     setStepIndex(0);
     setEmergency(false);
+    setPhase("intro");
+    setNlText("");
+    setNlStatus("idle");
+  }
+
+  // Sends the patient's free-text description to the server-side extraction
+  // route (Issue #6) and, on success, pre-fills the same `answers` state the
+  // manual wizard already uses — never bypassing it. On any failure this
+  // leaves `answers` untouched and the manual wizard remains fully usable.
+  async function handleExtract() {
+    const trimmed = nlText.trim();
+    if (!trimmed) return;
+
+    setNlStatus("loading");
+    try {
+      const response = await fetch("/api/intake/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: trimmed }),
+      });
+      const result = (await response.json()) as ExtractApiResponse;
+
+      if (!response.ok || !result.ok) {
+        setNlStatus("error");
+        return;
+      }
+
+      const mapped = mapExtractedIntakeToAnswers(result.data);
+      setAnswers((prev) => ({
+        ...prev,
+        concern: mapped.concern,
+        duration: mapped.duration,
+        severity: mapped.severity,
+        symptoms: mapped.symptoms,
+        conditions: mapped.conditions,
+        medication: mapped.medication,
+        emergency: mapped.emergency,
+      }));
+      setNlStatus("idle");
+      setPhase("wizard");
+    } catch {
+      setNlStatus("error");
+    }
+  }
+
+  function skipToManualIntake() {
+    setPhase("wizard");
   }
 
   const step = STEPS[stepIndex];
@@ -177,6 +239,18 @@ export default function PatientIntakePage() {
     return <EmergencyNotice onRestart={resetIntake} />;
   }
 
+  if (phase === "intro") {
+    return (
+      <NlIntakeIntro
+        text={nlText}
+        onTextChange={setNlText}
+        status={nlStatus}
+        onExtract={handleExtract}
+        onSkip={skipToManualIntake}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-blue-50 to-white">
       <DemoHeader switchTo={{ href: "/clinician", label: "Clinician demo" }} />
@@ -229,6 +303,81 @@ export default function PatientIntakePage() {
           >
             {step.key === "emergency" ? "See my result" : "Continue"}
           </button>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function NlIntakeIntro({
+  text,
+  onTextChange,
+  status,
+  onExtract,
+  onSkip,
+}: {
+  text: string;
+  onTextChange: (value: string) => void;
+  status: ExtractStatus;
+  onExtract: () => void;
+  onSkip: () => void;
+}) {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-blue-50 to-white">
+      <DemoHeader switchTo={{ href: "/clinician", label: "Clinician demo" }} />
+
+      <main className="mx-auto max-w-xl px-4 py-8 sm:px-6">
+        <PrototypeDisclaimer />
+
+        <div className="mt-5 rounded-3xl border border-indigo-100 bg-white p-6 shadow-sm shadow-indigo-100/40">
+          <h1 className="text-lg font-semibold text-slate-900 sm:text-xl">
+            Describe what&apos;s going on, in your own words
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Optional — an AI model (Qwen3-4B, via Hugging Face) will suggest
+            answers to the questions below for you to review and correct.
+            This is a research-informed extraction aid, not a diagnosis, and
+            has not been clinically validated. You&apos;ll still answer every
+            question yourself before continuing.
+          </p>
+
+          <label htmlFor="nl-intake-text" className="sr-only">
+            Describe your concern
+          </label>
+          <textarea
+            id="nl-intake-text"
+            value={text}
+            onChange={(event) => onTextChange(event.target.value)}
+            maxLength={MAX_PATIENT_TEXT_LENGTH}
+            rows={4}
+            placeholder="e.g. I've had a sore throat and a mild fever since yesterday."
+            className="mt-4 w-full rounded-2xl border border-indigo-200 px-4 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+          />
+
+          {status === "error" && (
+            <p className="mt-2 text-sm text-rose-600">
+              AI couldn&apos;t process that just now — you can still answer
+              the questions below.
+            </p>
+          )}
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={onExtract}
+              disabled={!text.trim() || status === "loading"}
+              className="rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition-opacity duration-150 hover:from-indigo-500 hover:to-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {status === "loading" ? "Reading your description…" : "Let AI help fill this in"}
+            </button>
+            <button
+              type="button"
+              onClick={onSkip}
+              className="rounded-full border border-indigo-200 bg-white px-5 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-50"
+            >
+              Answer manually instead
+            </button>
+          </div>
         </div>
       </main>
     </div>
