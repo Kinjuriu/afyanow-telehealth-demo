@@ -29,6 +29,11 @@ child. **AfyaNow does not diagnose.** The recommendation narrows down
 where to start; the clinician who accepts the consultation is responsible
 for the actual clinical assessment, diagnosis, and treatment.
 
+Defaulting to a General Practitioner in ambiguous cases is a deliberate,
+conservative product and safety design choice for this prototype — not a
+claim that GP-first routing is the universally correct clinical pathway
+for every concern.
+
 ### Optional AI-assisted intake (Issue #6)
 
 Patients can optionally start intake by describing their concern in free
@@ -49,8 +54,10 @@ This is an **information-extraction convenience layer only**:
   either, and no clinical scoring rules from either source are encoded in
   the prompt or in application logic.
 - It never calls, modifies, or bypasses `src/lib/safety.ts`, which remains
-  the sole, unmodified, deterministic safety/urgency authority. The model
-  cannot produce an Emergency/Priority/Routine result itself.
+  the sole, unmodified, deterministic safety/urgency authority, and runs
+  on the patient's final, reviewed answers — not on the model's raw
+  suggestion. The model cannot produce an Emergency/Priority/Routine
+  result itself.
 - The server-side response is validated against a fixed, known id
   vocabulary; anything unrecognized, malformed, wrongly typed, or outside
   that vocabulary is dropped, not guessed or repaired. A field the model
@@ -148,3 +155,14 @@ priority / routine check, followed by a concern → specialty lookup with a
 few overrides), not a clinical decision-support tool. It has not been
 clinically validated and must not be used for real medical triage or
 diagnosis.**
+
+**Before any real-world deployment, this routing and safety logic —
+including the GP-first default above — would need to be reviewed and
+validated by practising clinicians, with the underlying rules evaluated
+against appropriate clinical guidance for the intended Kenyan/Nairobi
+care context. Materials such as the WHO/ICRC/MSF Interagency Integrated
+Triage Tool and the Emergency Medicine Kenya Foundation triage handbook
+may inform that future validation work; neither this prototype's
+rule-based logic nor its optional AI-assisted intake has been validated
+against those or any other clinical triage framework, and no such
+validation is claimed here.**
