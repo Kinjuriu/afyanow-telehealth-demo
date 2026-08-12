@@ -4,6 +4,8 @@ A hackathon prototype for a Kenyan telehealth platform that helps patients
 describe a health concern and get matched with an appropriate, verified
 clinician.
 
+<img width="1280" height="744" alt="Screenshot 2026-08-12 at 18 06 19" src="https://github.com/user-attachments/assets/e5c996f1-5cbe-49f7-a97b-f26836be5f76" />
+
 ## Product overview
 
 AfyaNow lets a patient describe what's wrong in plain language, get a
