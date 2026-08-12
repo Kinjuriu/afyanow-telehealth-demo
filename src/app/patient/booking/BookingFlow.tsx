@@ -5,7 +5,9 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/Button";
+import PrototypeDisclaimer from "@/components/patient/PrototypeDisclaimer";
 import { getClinicianById, getInitials } from "@/lib/clinicians";
+import PatientConsultation from "./PatientConsultation";
 
 type ConsultationType = "chat" | "voice" | "video";
 
@@ -53,26 +55,7 @@ export default function BookingFlow() {
   const price = clinician.prices[type];
 
   if (confirmed) {
-    return (
-      <div className="rounded-3xl border border-indigo-100 bg-white p-8 text-center shadow-sm shadow-indigo-100/40">
-        <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">
-          Demo booking confirmed
-        </p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900">
-          You&apos;re set for a {selectedOption.label.toLowerCase()} consultation
-        </h1>
-        <p className="mt-3 text-sm leading-relaxed text-slate-600">
-          This is a mock confirmation for demonstration only — no real
-          appointment has been made and no payment was processed.
-        </p>
-        <Link
-          href="/"
-          className="mt-6 inline-block text-sm font-semibold text-indigo-600 hover:text-indigo-700"
-        >
-          Return to homepage
-        </Link>
-      </div>
-    );
+    return <PatientConsultation clinician={clinician} type={type} />;
   }
 
   return (
@@ -151,9 +134,11 @@ export default function BookingFlow() {
         </div>
       </div>
 
+      <PrototypeDisclaimer className="mt-6" />
+
       <Button
         variant="primary"
-        className="mt-8 w-full"
+        className="mt-6 w-full"
         onClick={() => setConfirmed(true)}
       >
         Continue to consultation

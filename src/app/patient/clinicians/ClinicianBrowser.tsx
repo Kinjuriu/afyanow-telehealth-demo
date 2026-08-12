@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CLINICIANS } from "@/lib/clinicians";
 import ClinicianCard from "@/components/patient/ClinicianCard";
+import { parseMatchingParams, prioritizeClinicians } from "@/lib/clinician-matching";
 
 type ConsultationType = "chat" | "voice" | "video";
 
@@ -17,7 +18,6 @@ const MAX_PRICE_CEILING = 1200;
 
 export default function ClinicianBrowser() {
   const searchParams = useSearchParams();
-  const initialSpecialty = searchParams.get("specialty") ?? "all";
 
   const specialties = useMemo(
     () => Array.from(new Set(CLINICIANS.map((clinician) => clinician.specialty))),
@@ -28,10 +28,22 @@ export default function ClinicianBrowser() {
     []
   );
 
-  const [availableOnly, setAvailableOnly] = useState(false);
-  const [specialty, setSpecialty] = useState(
-    specialties.includes(initialSpecialty) ? initialSpecialty : "all"
+  // Specialty, urgency (Issue #2's safety level), and who the consultation
+  // is for are all carried forward from the recommendation page via query
+  // parameters — validated here rather than trusted directly from the URL.
+  const matchingContext = useMemo(
+    () =>
+      parseMatchingParams({
+        specialty: searchParams.get("specialty"),
+        who: searchParams.get("who"),
+        urgency: searchParams.get("urgency"),
+        knownSpecialties: specialties,
+      }),
+    [searchParams, specialties]
   );
+
+  const [availableOnly, setAvailableOnly] = useState(false);
+  const [specialty, setSpecialty] = useState(matchingContext.specialty);
   const [language, setLanguage] = useState("all");
   const [consultationType, setConsultationType] = useState<ConsultationType>("chat");
   const [maxPrice, setMaxPrice] = useState(MAX_PRICE_CEILING);
@@ -44,8 +56,16 @@ export default function ClinicianBrowser() {
     return true;
   });
 
+  // Priority patients see currently available clinicians surfaced first;
+  // Routine leaves the existing filter order untouched.
+  const orderedClinicians = prioritizeClinicians(filtered, matchingContext.urgency);
+
   return (
-    <div className="mt-8 grid gap-8 lg:grid-cols-[260px_1fr]">
+    <div
+      className="mt-8 grid gap-8 lg:grid-cols-[260px_1fr]"
+      data-who={matchingContext.who}
+      data-urgency={matchingContext.urgency}
+    >
       <aside className="h-fit rounded-3xl border border-indigo-100 bg-white p-5 shadow-sm shadow-indigo-100/40">
         <h2 className="text-sm font-semibold text-slate-900">Filters</h2>
 
@@ -141,13 +161,19 @@ export default function ClinicianBrowser() {
       </aside>
 
       <div>
-        {filtered.length === 0 ? (
+        {matchingContext.urgency === "Priority" && orderedClinicians.length > 0 && (
+          <p className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs font-medium text-amber-700">
+            Because a prompt consultation was suggested, currently available
+            clinicians are shown first below.
+          </p>
+        )}
+        {orderedClinicians.length === 0 ? (
           <p className="rounded-2xl border border-indigo-100 bg-white p-6 text-sm text-slate-600 shadow-sm">
             No clinicians match these filters yet. Try adjusting them.
           </p>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((clinician) => (
+            {orderedClinicians.map((clinician) => (
               <ClinicianCard
                 key={clinician.id}
                 clinician={clinician}
