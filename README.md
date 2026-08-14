@@ -168,3 +168,8 @@ may inform that future validation work; neither this prototype's
 rule-based logic nor its optional AI-assisted intake has been validated
 against those or any other clinical triage framework, and no such
 validation is claimed here.**
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for
+details.
